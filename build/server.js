@@ -7,7 +7,6 @@ exports.io = exports.app = exports.cronJobMap = void 0;
 var app_1 = __importDefault(require("./app"));
 var cronInit_1 = require("./cronInit");
 var logger_1 = require("./Helper/logger");
-var workers_1 = require("./workers");
 /* eslint-disable no-var-requires */
 require("dotenv").config();
 var PORT = process.env.PORT;
@@ -22,7 +21,6 @@ exports.app = new app_1.default([
 exports.app.listen();
 // run this every 30 mins!!
 (0, cronInit_1.cronInit)();
-(0, workers_1.fetchBinanceAnnouncements)();
 process.on("uncaughtException", function (err) {
     logger_1.logger.error("Uncaught Exception:", err);
     // Perform cleanup tasks if necessary

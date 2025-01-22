@@ -25,7 +25,6 @@ app.listen();
 // run this every 30 mins!!
 cronInit();
 
-fetchBinanceAnnouncements();
 
 
 
