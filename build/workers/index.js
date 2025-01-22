@@ -39,65 +39,68 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.parseData = void 0;
-var functions_1 = require("../../cronjobs/reuters/functions");
-var logger_1 = require("../../../Helper/common/logger");
-var automationfeeds_1 = __importDefault(require("../../../models/automationfeeds"));
-var hooks_1 = require("../hooks");
-var reutersHeadline_1 = require("../reuters/reutersHeadline");
-var parseData = function (eventName, data) { return __awaiter(void 0, void 0, void 0, function () {
-    var item, error_1, error_2;
+exports.fetchBinanceAnnouncements = void 0;
+var axios_1 = __importDefault(require("axios"));
+var Binance_Announcement_1 = __importDefault(require("../models/Binance-Announcement"));
+var common_1 = require("./common");
+var common_2 = require("../Helper/common");
+var fetchBinanceAnnouncements = function () { return __awaiter(void 0, void 0, void 0, function () {
+    var response, articles, _i, articles_1, article, existingArticle, data, error_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 7, , 13]);
-                if (eventName === "piqfeeds")
-                    return [2 /*return*/];
-                if (!(eventName === "reuters")) return [3 /*break*/, 4];
-                return [4 /*yield*/, automationfeeds_1.default.findOne({
-                        is_active: true,
-                        slug: eventName,
+                _a.trys.push([0, 7, , 8]);
+                return [4 /*yield*/, axios_1.default.get('https://www.binance.com/bapi/apex/v1/public/apex/cms/article/list/query', {
+                        params: {
+                            type: 1,
+                            pageNo: 1,
+                            pageSize: 10,
+                            catalogId: 48
+                        }
                     })];
             case 1:
-                item = _a.sent();
-                if (!item) return [3 /*break*/, 3];
-                return [4 /*yield*/, (0, reutersHeadline_1.postReutersHeadline)(data === null || data === void 0 ? void 0 : data.data.filter(function (item) {
-                        return item.version === 1;
-                    }))];
+                response = _a.sent();
+                if (!response.data.success) {
+                    throw new Error('Failed to fetch Binance announcements');
+                }
+                articles = response.data.data.catalogs[0].articles;
+                _i = 0, articles_1 = articles;
+                _a.label = 2;
             case 2:
+                if (!(_i < articles_1.length)) return [3 /*break*/, 6];
+                article = articles_1[_i];
+                return [4 /*yield*/, Binance_Announcement_1.default.findOne({ id: article.id, code: "".concat(article.code), title: article.title })];
+            case 3:
+                existingArticle = _a.sent();
+                if (existingArticle) {
+                    return [3 /*break*/, 5];
+                }
+                data = {
+                    title: article.title,
+                    code: article.code,
+                    id: article.id,
+                    releaseDate: article.releaseDate,
+                    slug: (0, common_1.slugifyWithoutRandomText)(article.title),
+                    articleUrl: "https://www.binance.com/en/support/announcement/".concat((0, common_1.slugifyWithoutRandomText)(article.title), "-").concat(article.code),
+                };
+                return [4 /*yield*/, Binance_Announcement_1.default.create(data)];
+            case 4:
                 _a.sent();
-                _a.label = 3;
-            case 3: return [3 /*break*/, 6];
-            case 4: return [4 /*yield*/, (0, hooks_1.postSocketData)(eventName, data)];
+                if (!data.title.includes("Will List")) {
+                    return [3 /*break*/, 5];
+                }
+                (0, common_2.postToTelegram)(data);
+                _a.label = 5;
             case 5:
-                _a.sent();
-                _a.label = 6;
-            case 6: return [3 /*break*/, 13];
+                _i++;
+                return [3 /*break*/, 2];
+            case 6: return [2 /*return*/, articles];
             case 7:
                 error_1 = _a.sent();
-                _a.label = 8;
-            case 8:
-                _a.trys.push([8, 11, , 12]);
-                logger_1.logger.error(error_1 === null || error_1 === void 0 ? void 0 : error_1.stack, "From Reuters Fatcher");
-                return [4 /*yield*/, (0, functions_1.updateReutersToken)()];
-            case 9:
-                _a.sent();
-                return [4 /*yield*/, (0, functions_1.updatePiQAuthToken)()];
-            case 10:
-                _a.sent();
-                return [3 /*break*/, 12];
-            case 11:
-                error_2 = _a.sent();
-                if (error_2 instanceof Error) {
-                    logger_1.logger.error(error_2.message);
-                }
-                else {
-                    logger_1.logger.error("Unexpected error from Reuters Fatcher", error_2);
-                }
-                return [3 /*break*/, 12];
-            case 12: return [3 /*break*/, 13];
-            case 13: return [2 /*return*/];
+                console.error('Error fetching Binance announcements:', error_1);
+                throw error_1;
+            case 8: return [2 /*return*/];
         }
     });
 }); };
-exports.parseData = parseData;
+exports.fetchBinanceAnnouncements = fetchBinanceAnnouncements;

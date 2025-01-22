@@ -46,16 +46,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getTimeDifferenceInHours = exports.resetCounter = exports.incrementCounter = exports.getUpsertedDocuments = exports.slugify = exports.slugifyWithRandomText = exports.slugifyWithoutRandomText = exports.deleteOldestFeedRecords = exports.deleteOldestTwitterRecords = exports.getDelayedData = exports.getOrSaveDataToRedishClient = exports.removeDataFromRedisClient = exports.saveDataToRedisClient = exports.getDataFromRedisClient = exports.generateOrGetModel = exports.disableCronJob = exports.createCronJob = exports.parseDate = exports.toTimestamp = exports.sortByParsedDate = exports.sortByDate = exports.fetcherEmitDataFunction = exports.GetFirstDocument = exports.CreateOrUpdateFirstDocumnet = exports.delay = exports.decryptObject = exports.decryptPassword = exports.encryptPassword = exports.encryptObject = void 0;
+exports.getTimeDifferenceInHours = exports.getUpsertedDocuments = exports.slugify = exports.slugifyWithRandomText = exports.slugifyWithoutRandomText = exports.deleteOldestFeedRecords = exports.deleteOldestTwitterRecords = exports.getDelayedData = exports.generateOrGetModel = exports.disableCronJob = exports.createCronJob = exports.parseDate = exports.toTimestamp = exports.sortByParsedDate = exports.sortByDate = exports.fetcherEmitDataFunction = exports.GetFirstDocument = exports.CreateOrUpdateFirstDocumnet = exports.delay = exports.decryptObject = exports.decryptPassword = exports.encryptPassword = exports.encryptObject = void 0;
 var mongoose = require("mongoose");
 var routes_1 = require("../interface/routes");
-var redis_1 = require("../redis");
 var server_1 = require("../server");
-var Counter_1 = __importDefault(require("../models/Counter"));
 var cron = require("node-cron");
 var CryptoJS = require("crypto-js");
 require("dotenv").config();
@@ -288,91 +283,6 @@ var generateOrGetModel = function (modelName) {
     }
 };
 exports.generateOrGetModel = generateOrGetModel;
-var getDataFromRedisClient = function (key) { return __awaiter(void 0, void 0, void 0, function () {
-    var data;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, redis_1.redisClient.get(key)];
-            case 1:
-                data = _a.sent();
-                if (data) {
-                    return [2 /*return*/, JSON.parse(data)];
-                }
-                else {
-                    return [2 /*return*/, null];
-                }
-                return [2 /*return*/];
-        }
-    });
-}); };
-exports.getDataFromRedisClient = getDataFromRedisClient;
-var saveDataToRedisClient = function (key, data) { return __awaiter(void 0, void 0, void 0, function () {
-    return __generator(this, function (_a) {
-        redis_1.redisClient.setEx(key, 3600, JSON.stringify(data));
-        return [2 /*return*/];
-    });
-}); };
-exports.saveDataToRedisClient = saveDataToRedisClient;
-var removeDataFromRedisClient = function (modelName) { return __awaiter(void 0, void 0, void 0, function () {
-    var keys;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, redis_1.redisClient.keys("".concat(modelName, "_*"))];
-            case 1:
-                keys = _a.sent();
-                keys.forEach(function (key) { return redis_1.redisClient.del(key); });
-                return [2 /*return*/];
-        }
-    });
-}); };
-exports.removeDataFromRedisClient = removeDataFromRedisClient;
-var getOrSaveDataToRedishClient = function (feedName, query, model, response) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, page, _b, limit, data, dataFromRedish;
-    var _c;
-    var _d;
-    return __generator(this, function (_e) {
-        switch (_e.label) {
-            case 0:
-                _a = query.page, page = _a === void 0 ? 1 : _a, _b = query.limit, limit = _b === void 0 ? 50 : _b;
-                return [4 /*yield*/, model
-                        .find()
-                        .sort([
-                        ["pubDate", -1],
-                        ["title", 1],
-                    ])
-                        .skip((parseInt(page.toString()) - 1) * parseInt(limit.toString()))
-                        .limit(parseInt(limit.toString()))];
-            case 1:
-                data = _e.sent();
-                return [4 /*yield*/, (0, exports.getDataFromRedisClient)("".concat(feedName, "_").concat(page, "_").concat(limit))];
-            case 2:
-                dataFromRedish = _e.sent();
-                if (!!dataFromRedish) return [3 /*break*/, 5];
-                _c = {
-                    data: data,
-                    page: parseInt(page.toString()),
-                    limit: parseInt(limit.toString())
-                };
-                return [4 /*yield*/, model.countDocuments()];
-            case 3:
-                dataFromRedish = (_c.total = _e.sent(),
-                    _c);
-                return [4 /*yield*/, (0, exports.saveDataToRedisClient)("".concat(feedName, "_").concat(page, "_").concat(limit), dataFromRedish)];
-            case 4:
-                _e.sent();
-                _e.label = 5;
-            case 5:
-                if ((_d = dataFromRedish === null || dataFromRedish === void 0 ? void 0 : dataFromRedish.data) === null || _d === void 0 ? void 0 : _d.length) {
-                    return [2 /*return*/, response.status(200).send(dataFromRedish)];
-                }
-                else {
-                    return [2 /*return*/, response.status(404).send("NO_DATA_FOUND")];
-                }
-                return [2 /*return*/];
-        }
-    });
-}); };
-exports.getOrSaveDataToRedishClient = getOrSaveDataToRedishClient;
 var getDelayedData = function (feedName, query, model, response, delay) { return __awaiter(void 0, void 0, void 0, function () {
     var _a, page, _b, limit, data, resData;
     var _c;
@@ -499,50 +409,6 @@ var getUpsertedDocuments = function (dataArray, schema) { return __awaiter(void 
     });
 }); };
 exports.getUpsertedDocuments = getUpsertedDocuments;
-var incrementCounter = function (key) { return __awaiter(void 0, void 0, void 0, function () {
-    var counter;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, Counter_1.default.findOne({ key: key })];
-            case 1:
-                counter = _a.sent();
-                if (!counter) return [3 /*break*/, 3];
-                counter.count += 1;
-                return [4 /*yield*/, counter.save()];
-            case 2:
-                _a.sent();
-                return [3 /*break*/, 5];
-            case 3: return [4 /*yield*/, Counter_1.default.create({ key: key, count: 1 })];
-            case 4:
-                _a.sent();
-                _a.label = 5;
-            case 5: return [2 /*return*/];
-        }
-    });
-}); };
-exports.incrementCounter = incrementCounter;
-var resetCounter = function (key) { return __awaiter(void 0, void 0, void 0, function () {
-    var counter;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, Counter_1.default.findOne({ key: key })];
-            case 1:
-                counter = _a.sent();
-                if (!counter) return [3 /*break*/, 3];
-                counter.count = 0;
-                return [4 /*yield*/, counter.save()];
-            case 2:
-                _a.sent();
-                return [3 /*break*/, 5];
-            case 3: return [4 /*yield*/, Counter_1.default.create({ key: key, count: 0 })];
-            case 4:
-                _a.sent();
-                _a.label = 5;
-            case 5: return [2 /*return*/];
-        }
-    });
-}); };
-exports.resetCounter = resetCounter;
 var getTimeDifferenceInHours = function (time) {
     var timestamp = new Date(time);
     // Current time

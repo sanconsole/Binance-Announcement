@@ -66,8 +66,6 @@ exports.postBSky = exports.postTwit = exports.postToDiscord = exports.postToTele
 var axios_1 = __importDefault(require("axios"));
 var discord_js_1 = __importStar(require("discord.js"));
 var logger_1 = require("./logger");
-var form_data_1 = __importDefault(require("form-data"));
-var common_1 = require("../../workers/common");
 var TwitterApi = require("twitter-api-v2").TwitterApi;
 var _a = require("@atproto/api"), BskyAgent = _a.BskyAgent, RichText = _a.RichText;
 var client = new discord_js_1.default.Client({
@@ -118,57 +116,86 @@ var getMonthByIndex = function (id) {
     }
 };
 exports.getMonthByIndex = getMonthByIndex;
-var postToTelegram = function (text, item, base64) { return __awaiter(void 0, void 0, void 0, function () {
-    var headline, base64Data, directoryPath, err_1;
+var postToTelegram = function (data) { return __awaiter(void 0, void 0, void 0, function () {
+    var headline, err_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                _a.trys.push([0, 4, , 5]);
-                headline = text === null || text === void 0 ? void 0 : text.replaceAll("&", "(and)");
-                headline = "\n\n" + headline;
-                if (!(base64 && base64 !== null)) return [3 /*break*/, 1];
-                base64Data = base64.replace(/^data:image\/png;base64,/, "");
-                directoryPath = "telegram_image.png";
-                if (require("fs").existsSync(directoryPath)) {
-                    require("fs").unlinkSync(directoryPath);
-                    logger_1.logger.info("Telegram : Image Deleted");
-                }
-                require("fs").writeFile(directoryPath, base64Data, "base64", function (err) { return __awaiter(void 0, void 0, void 0, function () {
-                    var url, imageBuffer, formData, response;
-                    return __generator(this, function (_a) {
-                        switch (_a.label) {
-                            case 0:
-                                logger_1.logger.info("Telegram : Image Saved");
-                                url = "https://api.telegram.org/bot".concat(item.bot_token, "/sendPhoto");
-                                imageBuffer = require("fs").readFileSync("telegram_image.png");
-                                formData = new form_data_1.default();
-                                formData.append("chat_id", item.channel_id);
-                                formData.append("photo", imageBuffer, {
-                                    filename: "telegram_image.png",
-                                });
-                                formData.append("caption", headline);
-                                return [4 /*yield*/, axios_1.default.post(url, formData, {
-                                        headers: formData.getHeaders(),
-                                    })];
-                            case 1:
-                                response = _a.sent();
-                                logger_1.logger.info("Telegram: Headline Posted On Telegram");
-                                return [2 /*return*/];
-                        }
-                    });
-                }); });
-                return [3 /*break*/, 3];
-            case 1: return [4 /*yield*/, axios_1.default.get("https://api.telegram.org/bot".concat(item.bot_token, "/sendMessage?chat_id=").concat(item.channel_id, "&text=").concat(encodeURI(headline)))];
-            case 2:
+                _a.trys.push([0, 2, , 3]);
+                headline = data === null || data === void 0 ? void 0 : data.title;
+                headline = headline + "\n\n".concat(data === null || data === void 0 ? void 0 : data.articleUrl);
+                // if (base64 && base64 !== null) {
+                //   var base64Data = base64.replace(/^data:image\/png;base64,/, "");
+                //   const directoryPath = "telegram_image.png";
+                //   if (require("fs").existsSync(directoryPath)) {
+                //     require("fs").unlinkSync(directoryPath);
+                //     logger.info("Telegram : Image Deleted");
+                //   }
+                //   require("fs").writeFile(
+                //     directoryPath,
+                //     base64Data,
+                //     "base64",
+                //     async (err: any) => {
+                //       logger.info("Telegram : Image Saved");
+                //       const url = `https://api.telegram.org/bot${item.bot_token}/sendPhoto`;
+                //       // Read the image file into a buffer
+                //       const imageBuffer = require("fs").readFileSync("telegram_image.png");
+                //       // Create a FormData object to send as multipart/form-data
+                //       const formData = new FormData();
+                //       formData.append("chat_id", item.channel_id);
+                //       formData.append("photo", imageBuffer, {
+                //         filename: "telegram_image.png",
+                //       });
+                //       formData.append("caption", headline);
+                //       // Make the API request
+                //       const response = await axios.post(url, formData, {
+                //         headers: formData.getHeaders(),
+                //       });
+                //       logger.info("Telegram: Headline Posted On Telegram");
+                //     }
+                //   );
+                // } else {
+                return [4 /*yield*/, axios_1.default.get("https://api.telegram.org/bot".concat(process.env.TELEGRAM_BOT_TOKEN, "/sendMessage?chat_id=").concat(process.env.TELEGRAM_CHANNEL_ID, "&text=").concat(encodeURI(headline)))];
+            case 1:
+                // if (base64 && base64 !== null) {
+                //   var base64Data = base64.replace(/^data:image\/png;base64,/, "");
+                //   const directoryPath = "telegram_image.png";
+                //   if (require("fs").existsSync(directoryPath)) {
+                //     require("fs").unlinkSync(directoryPath);
+                //     logger.info("Telegram : Image Deleted");
+                //   }
+                //   require("fs").writeFile(
+                //     directoryPath,
+                //     base64Data,
+                //     "base64",
+                //     async (err: any) => {
+                //       logger.info("Telegram : Image Saved");
+                //       const url = `https://api.telegram.org/bot${item.bot_token}/sendPhoto`;
+                //       // Read the image file into a buffer
+                //       const imageBuffer = require("fs").readFileSync("telegram_image.png");
+                //       // Create a FormData object to send as multipart/form-data
+                //       const formData = new FormData();
+                //       formData.append("chat_id", item.channel_id);
+                //       formData.append("photo", imageBuffer, {
+                //         filename: "telegram_image.png",
+                //       });
+                //       formData.append("caption", headline);
+                //       // Make the API request
+                //       const response = await axios.post(url, formData, {
+                //         headers: formData.getHeaders(),
+                //       });
+                //       logger.info("Telegram: Headline Posted On Telegram");
+                //     }
+                //   );
+                // } else {
                 _a.sent();
                 logger_1.logger.info("Telegram: Headline Posted On Telegram");
-                _a.label = 3;
-            case 3: return [3 /*break*/, 5];
-            case 4:
+                return [3 /*break*/, 3];
+            case 2:
                 err_1 = _a.sent();
                 logger_1.logger.error(err_1, "error from telgram");
-                return [3 /*break*/, 5];
-            case 5: return [2 /*return*/];
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
         }
     });
 }); };
@@ -235,7 +262,7 @@ var textTweet = function (client, text) { return __awaiter(void 0, void 0, void 
     return __generator(this, function (_c) {
         switch (_c.label) {
             case 0:
-                _c.trys.push([0, 3, , 4]);
+                _c.trys.push([0, 2, , 3]);
                 // rwClient.v2
                 // const rwClient = client.readWrite;
                 return [4 /*yield*/, client.v2.tweet(text)];
@@ -244,15 +271,12 @@ var textTweet = function (client, text) { return __awaiter(void 0, void 0, void 
                 // const rwClient = client.readWrite;
                 _c.sent();
                 logger_1.logger.info("Twitter: Tweet Posted On Twitter Without Image");
-                return [4 /*yield*/, (0, common_1.incrementCounter)("twitter")];
+                return [3 /*break*/, 3];
             case 2:
-                _c.sent();
-                return [3 /*break*/, 4];
-            case 3:
                 err_3 = _c.sent();
                 logger_1.logger.error("Twitter Code :" + ((_a = err_3 === null || err_3 === void 0 ? void 0 : err_3.data) === null || _a === void 0 ? void 0 : _a.status) + " Message: " + ((_b = err_3 === null || err_3 === void 0 ? void 0 : err_3.data) === null || _b === void 0 ? void 0 : _b.detail));
-                return [3 /*break*/, 4];
-            case 4: return [2 /*return*/];
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
         }
     });
 }); };
@@ -283,9 +307,6 @@ var mediaTweet = function (client, text, image) { return __awaiter(void 0, void 
                         case 2:
                             _a.sent();
                             logger_1.logger.info("Twitter: Tweet Posted On Twitter With Image");
-                            return [4 /*yield*/, (0, common_1.incrementCounter)("twitter")];
-                        case 3:
-                            _a.sent();
                             return [2 /*return*/];
                     }
                 });

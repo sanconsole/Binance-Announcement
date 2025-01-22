@@ -41,12 +41,10 @@ const fetchBinanceAnnouncements = async (): Promise<BinanceArticle[]> => {
     if (!response.data.success) {
       throw new Error('Failed to fetch Binance announcements');
     }
-    console.log(response.data.data.catalogs[0].articles)
     const articles = response.data.data.catalogs[0].articles;
     for (const article of articles) {
       const existingArticle = await binanceAnnouncementModel.findOne({ id: article.id, code: `${article.code}`, title: article.title });
       if (existingArticle) {
-        console.log(`Article with ID ${article.id} already exists, skipping...`);
         continue;
       }
       const data: any = {
@@ -59,7 +57,6 @@ const fetchBinanceAnnouncements = async (): Promise<BinanceArticle[]> => {
       }
       await binanceAnnouncementModel.create(data);
       if (!data.title.includes("Will List")) {
-        console.log("Skipping telegram post - title does not contain 'Will List'");
         continue;
       }
       postToTelegram(data);

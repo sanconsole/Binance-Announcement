@@ -48,16 +48,8 @@ var morgan_1 = __importDefault(require("morgan"));
 var passport_1 = __importDefault(require("passport"));
 var path_1 = __importDefault(require("path"));
 var socket_io_1 = require("socket.io");
-var index_1 = __importDefault(require("./Route/User/index"));
-var index_2 = __importDefault(require("./Route/Role/index"));
-var index_3 = __importDefault(require("./Route/Twitter/index"));
-var index_4 = __importDefault(require("./Route/Telegram/index"));
-var index_5 = __importDefault(require("./Route/Whitelist/index"));
-var index_6 = __importDefault(require("./Route/Blacklist/index"));
-var index_7 = __importDefault(require("./Route/Discord/index"));
-var index_8 = __importDefault(require("./Route/Automationfeed/index"));
-var checkAuth_1 = require("./middlewares/checkAuth");
-var BSky_1 = __importDefault(require("./Route/BSky"));
+var index_1 = __importDefault(require("./Route/Whitelist/index"));
+var index_2 = __importDefault(require("./Route/Blacklist/index"));
 // import logger from 'express-logger';
 /* eslint-disable no-var-requires */
 require("dotenv").config();
@@ -145,37 +137,12 @@ var App = /** @class */ (function () {
             routes.forEach(function (route) {
                 _this.app.use("/", route.router);
             });
-            _this.app.use("/test", checkAuth_1.checkAdminAuth, function (req, res) {
-                console.log("api test");
-                res.send(" yes it is working");
-            });
-            // user routes
-            var userRoute = new index_1.default();
-            _this.app.use("/api", userRoute.router);
-            // role routes
-            var roleRoute = new index_2.default();
-            _this.app.use("/api", roleRoute.router);
-            // twitter routes
-            var twitterRoute = new index_3.default();
-            _this.app.use("/api", twitterRoute.router);
-            // automation feed routes
-            var atomationFeedRoute = new index_8.default();
-            _this.app.use("/api", atomationFeedRoute.router);
-            // discord routes
-            var discordRoute = new index_7.default();
-            _this.app.use("/api", discordRoute.router);
-            // telegram routes
-            var telegramRoute = new index_4.default();
-            _this.app.use("/api", telegramRoute.router);
             // blacklist routes
-            var blacklistRoute = new index_6.default();
+            var blacklistRoute = new index_2.default();
             _this.app.use("/api", blacklistRoute.router);
             // whitelist routes
-            var whitelistRoute = new index_5.default();
+            var whitelistRoute = new index_1.default();
             _this.app.use("/api", whitelistRoute.router);
-            // BSky routes
-            var bskyRoute = new BSky_1.default();
-            _this.app.use("/api", bskyRoute.router);
         };
         this.listen = function () {
             var server = _this.app.listen(_this.PORT, function () {

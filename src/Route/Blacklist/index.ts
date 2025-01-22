@@ -1,7 +1,5 @@
 import express, { NextFunction, Request, Response } from "express";
-import {
-  addEncryptedDataToList,
-} from "../hooks";
+
 import { SchemaNames } from "../../interface/Feeds";
 import BlacklistSchema from "../../models/Blacklist/newReutersBlacklist";
 
