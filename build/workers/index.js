@@ -52,20 +52,26 @@ var fetchBinanceAnnouncements = function () { return __awaiter(void 0, void 0, v
                 _a.trys.push([0, 7, , 8]);
                 return [4 /*yield*/, axios_1.default.get('https://www.binance.com/bapi/apex/v1/public/apex/cms/article/list/query', {
                         headers: {
-                            'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
-                            'Accept': 'application/json',
+                            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                            'Accept': 'application/json, text/plain, */*',
                             'Accept-Language': 'en-US,en;q=0.9',
+                            'Accept-Encoding': 'gzip, deflate, br',
                             'Cache-Control': 'no-cache',
                             'Pragma': 'no-cache',
                             'Referer': 'https://www.binance.com/',
-                            'Origin': 'https://www.binance.com'
+                            'Origin': 'https://www.binance.com',
+                            'Connection': 'keep-alive',
+                            'Sec-Fetch-Dest': 'empty',
+                            'Sec-Fetch-Mode': 'cors',
+                            'Sec-Fetch-Site': 'same-origin'
                         },
                         params: {
                             type: 1,
                             pageNo: 1,
                             pageSize: 10,
                             catalogId: 48
-                        }
+                        },
+                        timeout: 10000
                     })];
             case 1:
                 response = _a.sent();

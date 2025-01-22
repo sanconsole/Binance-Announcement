@@ -21,7 +21,7 @@ export const cronInit = () => {
 
 // Run every 30 minutes
 export const BinanceAnnouncementsCronJob = new CronJob(
-  "*/5 * * * * *",
+  "*/10 * * * * *",
   async () => {
     try {
       console.log("Running Binance announcements cron job");

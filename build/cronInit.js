@@ -53,7 +53,7 @@ var cronInit = function () {
 };
 exports.cronInit = cronInit;
 // Run every 30 minutes
-exports.BinanceAnnouncementsCronJob = new cron_1.CronJob("*/5 * * * * *", function () { return __awaiter(void 0, void 0, void 0, function () {
+exports.BinanceAnnouncementsCronJob = new cron_1.CronJob("*/10 * * * * *", function () { return __awaiter(void 0, void 0, void 0, function () {
     var error_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
