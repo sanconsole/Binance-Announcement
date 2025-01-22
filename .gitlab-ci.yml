@@ -1,0 +1,23 @@
+image: docker:latest
+
+services:
+    - docker:19.03.12-dind
+
+variables:
+    IMAGE_TAG: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+
+before_script:
+    - docker login registry.gitlab.com -u $DEPLOY_USER -p $DEPLOY_TOKEN
+    - echo -e "PORT=${PORT}\nDB_URL=${DB_URL}\nTWITTER_CONSUMER_KEY=${TWITTER_CONSUMER_KEY}\nTWITTER_CONSUMER_SECRET=${TWITTER_CONSUMER_SECRET}\nTWITTER_ACCESS_TOKEN=${TWITTER_ACCESS_TOKEN}\nTWITTER_ACCESS_TOKEN_SECRET=${TWITTER_ACCESS_TOKEN_SECRET}\nFEEDLY_TOKEN=${FEEDLY_TOKEN}\nINO_APP_ID=${INO_APP_ID}\nINO_APP_KEY=${INO_APP_KEY}\nINO_AUTHORIZATION_CODE=${INO_AUTHORIZATION_CODE}\nSTRIPE_PUBLIC_KEY=${STRIPE_PUBLIC_KEY}\nSTRIPE_API_KEY=${STRIPE_API_KEY}" > ./.env
+
+stages:
+  - build
+
+build:
+  type: build
+  stage: build
+  script:
+    - docker build -t $IMAGE_TAG .
+    - docker push $IMAGE_TAG
+  only:
+    - dev
