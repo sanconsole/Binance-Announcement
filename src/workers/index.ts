@@ -29,6 +29,9 @@ const fetchBinanceAnnouncements = async (): Promise<BinanceArticle[]> => {
     const response = await axios.get<BinanceResponse>(
       'https://www.binance.com/bapi/apex/v1/public/apex/cms/article/list/query',
       {
+        headers: {
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        },
         params: {
           type: 1,
           pageNo: 1,
